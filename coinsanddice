@@ -1,0 +1,168 @@
+# Coin Flip Function
+flip() {
+    local RED='\033[0;31m'
+    local GREEN='\033[0;32m'
+    local YELLOW='\033[1;33m'
+    local BLUE='\033[0;34m'
+    local CYAN='\033[0;36m'
+    local MAGENTA='\033[0;35m'
+    local NC='\033[0m'
+    
+    echo ""
+    echo "${CYAN}🪙  Flipping coin...${NC}"
+    sleep 0.3
+    echo "${YELLOW}   ↻${NC}"
+    sleep 0.3
+    echo "${YELLOW}   ↺${NC}"
+    sleep 0.3
+    echo "${YELLOW}   ↻${NC}"
+    sleep 0.2
+    
+    local result=$((RANDOM % 2))
+    
+    echo ""
+    if [[ $result -eq 0 ]]; then
+        echo "${GREEN}╔═══════════════╗${NC}"
+        echo "${GREEN}║               ║${NC}"
+        echo "${GREEN}║     HEADS     ║${NC}"
+        echo "${GREEN}║       ◉       ║${NC}"
+        echo "${GREEN}║               ║${NC}"
+        echo "${GREEN}╚═══════════════╝${NC}"
+    else
+        echo "${BLUE}╔═══════════════╗${NC}"
+        echo "${BLUE}║               ║${NC}"
+        echo "${BLUE}║     TAILS     ║${NC}"
+        echo "${BLUE}║       ◈       ║${NC}"
+        echo "${BLUE}║               ║${NC}"
+        echo "${BLUE}╚═══════════════╝${NC}"
+    fi
+    echo ""
+}
+
+# Dice Roller Function
+dice() {
+    local RED='\033[0;31m'
+    local GREEN='\033[0;32m'
+    local YELLOW='\033[1;33m'
+    local BLUE='\033[0;34m'
+    local CYAN='\033[0;36m'
+    local MAGENTA='\033[0;35m'
+    local NC='\033[0m'
+    
+    local num_dice=1
+    local dice_type=6
+    
+    # Parse arguments
+    if [[ $# -eq 1 ]]; then
+        num_dice=$1
+    elif [[ $# -eq 2 ]]; then
+        num_dice=$1
+        dice_type=$2
+    fi
+    
+    echo ""
+    echo "${CYAN}🎲  Rolling ${num_dice}d${dice_type}...${NC}"
+    sleep 0.5
+    
+    local total=0
+    local results=()
+    
+    for ((i=1; i<=num_dice; i++)); do
+        local roll=$((RANDOM % dice_type + 1))
+        results+=($roll)
+        total=$((total + roll))
+    done
+    
+    echo ""
+    echo "${YELLOW}╔════════════════════╗${NC}"
+    
+    for ((i=1; i<=${#results[@]}; i++)); do
+        local roll=${results[$i]}
+        local dice_face=$(get_dice_face $roll)
+        echo "${YELLOW}║${NC} Die #${i}: ${dice_face} ${YELLOW}║${NC}"
+    done
+    
+    echo "${YELLOW}╠════════════════════╣${NC}"
+    
+    if [[ $num_dice -gt 1 ]]; then
+        echo "${YELLOW}║${NC} ${GREEN}Total: ${total}${NC}        ${YELLOW}║${NC}"
+    fi
+    
+    # Add fun messages
+    if [[ $num_dice -eq 1 && $dice_type -eq 6 ]]; then
+        if [[ $roll -eq 6 ]]; then
+            echo "${YELLOW}║${NC} ${MAGENTA}★ CRITICAL! ★${NC}    ${YELLOW}║${NC}"
+        elif [[ $roll -eq 1 ]]; then
+            echo "${YELLOW}║${NC} ${RED}✗ FUMBLE! ✗${NC}      ${YELLOW}║${NC}"
+        fi
+    elif [[ $num_dice -gt 1 ]]; then
+        local max_possible=$((num_dice * dice_type))
+        if [[ $total -eq $max_possible ]]; then
+            echo "${YELLOW}║${NC} ${MAGENTA}★ MAX ROLL! ★${NC}    ${YELLOW}║${NC}"
+        elif [[ $total -eq $num_dice ]]; then
+            echo "${YELLOW}║${NC} ${RED}✗ SNAKE EYES! ✗${NC}  ${YELLOW}║${NC}"
+        fi
+    fi
+    
+    echo "${YELLOW}╚════════════════════╝${NC}"
+    echo ""
+    echo "${CYAN}Usage: dice [number] [sides]${NC}"
+    echo "${CYAN}Examples: dice, dice 2, dice 3 20${NC}"
+    echo ""
+}
+
+# Helper function to display dice faces
+get_dice_face() {
+    local num=$1
+    case $num in
+        1) echo "${RED}⚀${NC}" ;;
+        2) echo "${GREEN}⚁${NC}" ;;
+        3) echo "${BLUE}⚂${NC}" ;;
+        4) echo "${YELLOW}⚃${NC}" ;;
+        5) echo "${MAGENTA}⚄${NC}" ;;
+        6) echo "${CYAN}⚅${NC}" ;;
+        *) echo "${GREEN}${num}${NC}" ;;
+    esac
+}
+
+# Multi-flip function (bonus!)
+flipx() {
+    local RED='\033[0;31m'
+    local GREEN='\033[0;32m'
+    local YELLOW='\033[1;33m'
+    local CYAN='\033[0;36m'
+    local NC='\033[0m'
+    
+    local count=${1:-5}
+    local heads=0
+    local tails=0
+    
+    echo ""
+    echo "${CYAN}🪙  Flipping ${count} coins...${NC}"
+    echo ""
+    
+    for ((i=1; i<=count; i++)); do
+        local result=$((RANDOM % 2))
+        if [[ $result -eq 0 ]]; then
+            echo -n "${GREEN}H${NC} "
+            heads=$((heads + 1))
+        else
+            echo -n "${YELLOW}T${NC} "
+            tails=$((tails + 1))
+        fi
+        
+        if [[ $((i % 10)) -eq 0 ]]; then
+            echo ""
+        fi
+        
+        sleep 0.1
+    done
+    
+    echo ""
+    echo ""
+    echo "${CYAN}╔═══════════════════╗${NC}"
+    echo "${CYAN}║${NC} ${GREEN}Heads: ${heads}${NC}        ${CYAN}║${NC}"
+    echo "${CYAN}║${NC} ${YELLOW}Tails: ${tails}${NC}        ${CYAN}║${NC}"
+    echo "${CYAN}╚═══════════════════╝${NC}"
+    echo ""
+}
